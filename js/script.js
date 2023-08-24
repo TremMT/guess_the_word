@@ -32,14 +32,21 @@ const dots = function (word) {
 dots(word);
 // ^ The code for the dots/ dot placeholders
 
+
 // v Button click event listener
 button.addEventListener("click", function (e) {
   e.preventDefault();
-  const inputValue = letterG.value;
-  //console.log(inputValue);
-  // ^ Function that checks the input, and passes it the input value as an argument
   message.innerText = "";
-
+  const inputValue = letterG.value;
+  const goodGuess = playerInput(inputValue);
+  // ^ Function that checks the input, and passes it the input value as an argument
+  
+  if (goodGuess) {
+    makeGuess(inputValue);
+  }
+  letterG.value = "";
+  //REMINDER - To clear the letters from the input field set the value of the input field to an empty string. 
+  
 });
 
 
@@ -62,15 +69,16 @@ const playerInput = function (input) {
   else {
     return input;
   }
+  //console.log(input);
 };
 
-const makeGuess = function (guess) {
+const makeGuess = function(guess) {
   guess = guess.toUpperCase();
   if (guessedLetters.includes(guess)) {
     message.innerText = `Whoops, you've already tried that letter! Please try again.`
   }
   else {
     guessedLetters.push(guess);
-    //console.log(guessedLetters);
+    console.log(guess);
   }
 };
