@@ -40,13 +40,13 @@ button.addEventListener("click", function (e) {
   const inputValue = letterG.value;
   const goodGuess = playerInput(inputValue);
   // ^ Function that checks the input, and passes it the input value as an argument
-  
+
   if (goodGuess) {
     makeGuess(inputValue);
   }
   letterG.value = "";
   //REMINDER - To clear the letters from the input field set the value of the input field to an empty string. 
-  
+
 });
 
 
@@ -69,16 +69,58 @@ const playerInput = function (input) {
   else {
     return input;
   }
-  //console.log(input);
 };
 
-const makeGuess = function(guess) {
+const makeGuess = function (guess) {
   guess = guess.toUpperCase();
   if (guessedLetters.includes(guess)) {
     message.innerText = `Whoops, you've already tried that letter! Please try again.`
   }
   else {
     guessedLetters.push(guess);
-    console.log(guess);
+    showGuessedLetters();
+    updateWordProgress(guessedLetters);
+    // ^ Call your new shiny new function at the bottom of the else statement inside the makeGuess function and pass it guessedLetters as an argument.
+    console.log(guessedLetters);
+  }
+};
+
+const showGuessedLetters = function () {
+  // a function to update the page with the letters the player guesses
+  guessedLettersList.innerHTML = "";
+  for (const letterG of guessedLetters) {
+    //console.log(guess);
+    const li = document.createElement("li");
+    li.innerText = letterG;
+    //Call the function inside the else statement of the makeGuess function so the letter displays when it hasn’t been guessed before.
+    guessedLettersList.append(li);
+  }
+};
+
+const updateWordProgress = function (guessedLetters) {
+  const wordUpper = word.toUpperCase();
+  const wordArray = wordUpper.split("");
+  const showWord = [];
+  for (const letter of wordArray) {
+    if (guessedLetters.includes(letter)) {
+      showWord.push(letter.toUpperCase());
+    } else {
+      showWord.push("●");
+    }
+  }
+  // console.log(showWord);
+  wordInProg.innerText = showWord.join("");
+  // ^ Check if the wordArray contains any letters from the guessedLetters array. If it does contain any of the letters, update the circle symbol with the correct letter. Hint: You’ll want to create a new array with the updated characters and then use join() to update the empty paragraph where the word in progress will appear.
+
+  greatSuccess();
+  //At the bottom of the function that updates the word in progress, call this function to check if the player has won.
+};
+
+
+const greatSuccess = function () {
+  if (word.toUpperCase() === wordInProg.innerText) {
+    //Create and name a function to check if the player successfully guessed the word and won the game. Begin by verifying if their word in progress matches the word they should guess. 
+    message.classList.add("win");
+    message.innerHTML = `<p class="highlight">You guessed correct the word! Congrats!</p>`;
   }
 };
