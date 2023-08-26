@@ -14,11 +14,30 @@ const message = document.querySelector(".message");
 // ^ Empty paragraph where messages will appear when the player guesses a letter.
 const playAgainButton = document.querySelector(".play-again");
 // ^ Hidden button that will appear prompting the player to play again.
-const word = "magnolia";
+let word = "magnolia";
 // ^ Magnolia is your starting word to test out the game until you fetch words from a hosted file in a later step.
 const guessedLetters = [];
 // ^ This array will contain all the letters the player guesses.
+let remainingGuesses = 8;
+// ^ The value is the maximum number of guesses the player can make.Hint: The value of the remainingGuesses variable will change over time. That's why LET is used here.
 
+const getWord = async function () {
+  const wList = await fetch(`https://gist.githubusercontent.com/skillcrush-curriculum/7061f1d4d3d5bfe47efbfbcfe42bf57e/raw/5ffc447694486e7dea686f34a6c085ae371b43fe/words.txt`);
+  const words = await wList.text();
+  // ^ Since you are fetching TEXT use "await ****.text()"
+  const wordArray = words.split("\n");
+  // ^ To select a random word, you’ll need first to transform the data you fetched into an array. Each word is separated by a newline (line break), so this is the delimiter you’ll use to create the array
+  const randomIndex = Math.floor(Math.random() * wordArray.length);
+  // ^ To grab a random word from the file, create a variable to pull a random index from the wordArray. Hint: Use Math.floor/.random times the length of the wordArray. 
+  word = wordArray[randomIndex].trim();
+  // ^ Use randomIndex and .trim() to pull out a random word from the array and remove any extra whitespace around the word. Reassign the value of the existing word global variable to this new random word. Now declare the global WORD variable with LET instead of const.
+  dots(word);
+
+ // console.log(wordArray)
+}
+
+getWord();
+// ^ Will call and new word
 
 // v The code for the dots/ dot placeholders
 const dots = function (word) {
@@ -78,10 +97,11 @@ const makeGuess = function (guess) {
   }
   else {
     guessedLetters.push(guess);
+    updateRemainingGuesses(guess);
     showGuessedLetters();
     updateWordProgress(guessedLetters);
     // ^ Call your new shiny new function at the bottom of the else statement inside the makeGuess function and pass it guessedLetters as an argument.
-    console.log(guessedLetters);
+    //console.log(guessedLetters);
   }
 };
 
@@ -116,6 +136,29 @@ const updateWordProgress = function (guessedLetters) {
   //At the bottom of the function that updates the word in progress, call this function to check if the player has won.
 };
 
+const updateRemainingGuesses = function (guess) {
+  const upWord = word.toUpperCase();
+  if (!upWord.includes(guess)) {
+    // ^ If the word DOESN'T include the guessed letter
+    message.innerText = `Oof! Sorry but the word has no ${guess}.`
+    remainingGuesses -= 1;
+    // ^ Find out if the word contains the guess. If it doesn’t include the letter from guess, let the player know that the word doesn’t contain the letter and subtract 1 from their remainingGuesses. 
+  } else {
+    message.innerText = `Good job! The word has the letter ${guess}!`
+  }
+  // ^ In the function, grab the word and make it uppercase. Because the player’s guess is uppercase, making the word they’re guessing uppercase will compare letters with the same casing.
+  if (remainingGuesses === 0) {
+    message.innerHTML = `GAME OVER. The word word was <span class="highlight">${upWord}</span>.`;
+  }
+  else if (remainingGuesses === 1) {
+    remainingSpan.innerText = `${remainingGuesses} guess`
+    // ^  If they have 1 guess, update the span inside the paragraph where the remaining guesses will display to tell the player they have one guess remaining.
+  }
+  else {
+    remainingSpan.innerText = `${remainingGuesses} guesses`
+    // ^ For more than one guess, update the same span element to tell them the number of guesses remaining.
+  }
+};
 
 const greatSuccess = function () {
   if (word.toUpperCase() === wordInProg.innerText) {
